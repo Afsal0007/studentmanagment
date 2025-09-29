@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Todos</title>
+    <style>
+        /* Reset default styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 50px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #fff;
+            font-size: 2em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .todo-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            width: 400px;
+        }
+
+        form input, form textarea, form button {
+            width: 100%;
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        form input, form textarea {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+        }
+
+        form input::placeholder, form textarea::placeholder {
+            color: #e0e0e0;
+        }
+
+        form input:focus, form textarea:focus {
+            background: rgba(255,255,255,0.3);
+            box-shadow: 0 0 5px rgba(255,255,255,0.6);
+        }
+
+        form button {
+            background: #ff6b6b;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background: #ff4757;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        li {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px);
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        li span {
+            color: #fff;
+            margin-left: 10px;
+        }
+
+        li span.completed {
+            text-decoration: line-through;
+            color: #bbb;
+        }
+
+        li a {
+            text-decoration: none;
+            color: #ff6b6b;
+            transition: color 0.3s ease;
+            margin-left: 10px;
+        }
+
+        li a:hover {
+            color: #ff4757;
+        }
+
+        input[type="checkbox"] {
+            width: auto;
+            transform: scale(1.2);
+        }
+
+        .logout {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #fff;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .logout:hover {
+            color: #ff6b6b;
+        }
+
+        /* Optional fade-in animation */
+        .todo-container {
+            animation: fadeIn 1s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="todo-container">
+    <h2>To-Do List</h2>
+
+    <!-- Form to add new todo -->
+    <form th:action="@{/todos}" method="post" th:object="${newTodo}">
+        <input type="text" th:field="*{taskName}" placeholder="Task Name" required/>
+        <textarea th:field="*{taskDescription}" placeholder="Task Description"></textarea>
+        <button type="submit">Add Task</button>
+    </form>
+
+    <!-- List of todos -->
+    <ul>
+        <li th:each="todo : ${todos}">
+            <form th:action="@{/todos}" method="post" style="display:inline;">
+                <input type="checkbox" th:checked="${todo.completed}" 
+                       th:onchange="window.location.href='/todos/complete/' + [[${todo.id}]]"/>
+            </form>
+            <span th:text="${todo.taskName}" th:classappend="${todo.completed} ? 'completed'"></span> -
+            <span th:text="${todo.taskDescription}" th:classappend="${todo.completed} ? 'completed'"></span>
+            <a th:href="@{/todos/delete/{id}(id=${todo.id})}">Delete</a>
+        </li>
+    </ul>
+
+    <a class="logout" th:href="@{/logout}">Logout</a>
+</div>
+
+</body>
+</html>
